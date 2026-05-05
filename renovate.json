@@ -1,0 +1,57 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>acme/acme-renovate-config//presets/base",
+    "schedule:daily"
+  ],
+  "baseBranchPatterns": ["main"],
+  "packageRules": [
+    {
+      "description": "Group Go module updates across all go.mod files",
+      "matchManagers": ["gomod"],
+      "matchFileNames": ["go.mod", "ring/example/local/go.mod"],
+      "groupName": "go-dependencies"
+    },
+    {
+      "description": "Don't update replace directives",
+      "matchPackageNames": [
+        "github.com/hashicorp/memberlist"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Update Go version everywhere at once: go.mod and GitHub Actions workflows",
+      "matchDatasources": [
+        "golang-version",
+        "github-releases"
+      ],
+      "matchPackageNames": [
+        "go",
+        "golang",
+        "actions/go-versions"
+      ],
+      "groupName": "Go"
+    },
+    {
+      "description": "Only update dependencies digests on Monday mornings to avoid PR spam from repos not using semver",
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "schedule": ["before 5am on Monday"]
+    }
+  ],
+  "branchPrefix": "deps-update/",
+  "labels": [
+    "dependency-update"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": [
+      "security-update"
+    ]
+  },
+  "osvVulnerabilityAlerts": true,
+  "dependencyDashboard": false,
+  "prHourlyLimit": 10,
+  "prConcurrentLimit": 20
+}
